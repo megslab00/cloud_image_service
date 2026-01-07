@@ -1,62 +1,54 @@
-📸 Cloud Image Service
+☁️ Cloud Image Service
+A cloud-native, scalable image storage & metadata platform
+<p align="center"> <img src="https://img.shields.io/badge/FastAPI-0.110+-009688?style=for-the-badge&logo=fastapi"/> <img src="https://img.shields.io/badge/AWS-S3%20%7C%20DynamoDB-orange?style=for-the-badge&logo=amazonaws"/> <img src="https://img.shields.io/badge/LocalStack-Cloud%20Emulator-blue?style=for-the-badge"/> <img src="https://img.shields.io/badge/Python-3.11-yellow?style=for-the-badge&logo=python"/> </p>
+🌟 What is this?
 
-A scalable, cloud-native image upload & metadata management system
+Cloud Image Service is a backend system that powers secure, high-performance image uploads just like Instagram, Google Photos, or Cloudinary.
 
-🚀 Overview
+Instead of sending large files through the server, it uses S3 Presigned URLs so users upload images directly to cloud storage — making it:
 
-This project is a production-style backend service for handling secure image uploads, cloud storage, and metadata management — similar to the image pipeline used in apps like Instagram, Google Photos, or Cloudinary.
+🚀 Faster
 
-It uses S3 presigned URLs so clients upload images directly to cloud storage without passing through the backend, making it:
+💸 Cheaper
 
-Faster
+📈 Infinitely scalable
 
-Cheaper
+All image metadata is stored in DynamoDB, allowing fast searching, filtering, and management.
 
-More scalable
+This entire cloud system runs locally using LocalStack, giving you real AWS behavior without real AWS bills.
 
-Metadata is stored in a NoSQL database (DynamoDB), allowing filtering, querying, and management of millions of images.
-
-The entire cloud stack runs locally using LocalStack, giving a real AWS-like environment without cloud costs.
-
-🧱 Architecture
-Client (Browser / App)
-        |
-        | 1. Request upload URL
-        ▼
-FastAPI Backend
-        |
-        | 2. Generate presigned URL
-        ▼
+🧠 How it works
+User App
+   |
+   | 1️⃣ Request upload URL
+   ▼
+FastAPI Server
+   |
+   | 2️⃣ Returns presigned S3 URL
+   ▼
 Amazon S3 (LocalStack)
-        |
-        | 3. Client uploads image directly
-        ▼
+   |
+   | 3️⃣ Image uploaded directly
+   ▼
 DynamoDB (LocalStack)
-        |
-        | 4. Metadata stored & queried
-        ▼
-FastAPI APIs
+   |
+   | 4️⃣ Metadata stored
+   ▼
+FastAPI APIs → List / Download / Delete
 
-🛠 Tech Stack
-Layer	Technology
-Language	Python 3.11
-API Framework	FastAPI
-Cloud Storage	Amazon S3 (via LocalStack)
-Database	Amazon DynamoDB
-Infrastructure	Docker + LocalStack
+
+This architecture is exactly how real cloud companies build image platforms.
+
+🧰 Tech Stack
+Layer	Tech
+API	FastAPI
+Cloud Storage	Amazon S3
+Database	DynamoDB
+Cloud Emulator	LocalStack
 Testing	Pytest + Moto
-⚙️ Setup Instructions
-1️⃣ Install Requirements
-
-Make sure you have:
-
-Docker
-
-Docker Compose
-
-Python 3.11+
-
-2️⃣ Start AWS Services Locally
+Language	Python 3.11
+⚙️ Setup in 60 seconds
+1️⃣ Start cloud services
 docker-compose up -d
 
 
@@ -66,85 +58,63 @@ S3
 
 DynamoDB
 
-3️⃣ Install Python Dependencies
+2️⃣ Install dependencies
 pip install -r requirements.txt
 
-4️⃣ Run the API
+3️⃣ Start the API
 uvicorn app.main:app --reload
 
 
-API will run at:
-
-http://127.0.0.1:8000
-
-
-Swagger UI:
+Now open:
 
 http://127.0.0.1:8000/docs
 
-📤 API Endpoints
-Upload Image
 
-POST /images/upload
+and you get a full interactive API UI 🔥
 
-Returns a presigned S3 upload URL and stores metadata.
+🚀 What you can do
+📤 Upload an image
 
-Example:
+Generates a secure cloud upload URL and saves metadata.
 
 curl -X POST "http://localhost:8000/images/upload?user_id=meghana&tags=selfie&description=test"
 
-List Images
+📁 List images
 
-GET /images
-
-Supports filters:
-
-user_id
-
-tag
-
-Example:
+Filter by user or tags.
 
 curl "http://localhost:8000/images?user_id=meghana"
 
-Download Image
+📥 Download image
+curl "http://localhost:8000/images/{image_id}/download"
 
-GET /images/{image_id}/download
 
-Returns a secure temporary S3 URL.
+Returns a secure cloud link.
 
-Delete Image
+🗑️ Delete image
+curl -X DELETE "http://localhost:8000/images/{image_id}"
 
-DELETE /images/{image_id}
 
-Deletes both:
+Removes from both S3 and DynamoDB.
 
-S3 file
+🧪 Tested like a real cloud system
 
-DynamoDB metadata
+This project uses Moto to mock AWS services and Pytest to validate:
 
-🧪 Testing
+Presigned URL generation
 
-This project includes fully isolated AWS-mocked tests using Moto.
+DynamoDB writes
+
+API correctness
 
 Run:
 
 pytest
 
-
-It validates:
-
-Presigned URL generation
-
-DynamoDB storage
-
-Image listing
-
-📂 Project Structure
+📂 Project Layout
 cloud_image_service/
 ├── app/
 │   ├── main.py
-│   ├── __init__.py
 │   └── tests/
 │       ├── test_upload.py
 │       └── test_list.py
@@ -152,7 +122,7 @@ cloud_image_service/
 ├── requirements.txt
 └── README.md
 
-👩‍💻 Author
+👩‍💻 Built by
 
 Meghana Shetty
 📧 meghanashetty7227@gmail.com
