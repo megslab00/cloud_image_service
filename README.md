@@ -1,102 +1,158 @@
-Cloud-Based Image Upload & Metadata Service
-📌 Project Overview
-This project is a scalable, cloud-native image management service developed as part of the UNLOADIN internship assignment. The system supports secure image uploads, cloud storage, and metadata management using a NoSQL database, emulating a core module of applications like Instagram.
+📸 Cloud Image Service
 
-To ensure high performance and cost-efficiency, the service utilizes S3 Presigned URLs. This allows clients to upload and download images directly from S3, bypassing Lambda execution limits and reducing memory overhead.
+A scalable, cloud-native image upload & metadata management system
 
-🛠️ Tech Stack
-Language: Python 3.11+
+🚀 Overview
 
-Framework: FastAPI (representing AWS API Gateway/Lambda logic)
+This project is a production-style backend service for handling secure image uploads, cloud storage, and metadata management — similar to the image pipeline used in apps like Instagram, Google Photos, or Cloudinary.
 
-Storage: Amazon S3
+It uses S3 presigned URLs so clients upload images directly to cloud storage without passing through the backend, making it:
 
-Database: Amazon DynamoDB (NoSQL)
+Faster
 
-Local Emulation: LocalStack
+Cheaper
 
-Testing: Pytest and Moto (for AWS mocking)
+More scalable
 
-⚙️ Setup & Installation
-1. Prerequisites
-Ensure you have the following installed:
+Metadata is stored in a NoSQL database (DynamoDB), allowing filtering, querying, and management of millions of images.
 
-Docker and Docker Compose
+The entire cloud stack runs locally using LocalStack, giving a real AWS-like environment without cloud costs.
+
+🧱 Architecture
+Client (Browser / App)
+        |
+        | 1. Request upload URL
+        ▼
+FastAPI Backend
+        |
+        | 2. Generate presigned URL
+        ▼
+Amazon S3 (LocalStack)
+        |
+        | 3. Client uploads image directly
+        ▼
+DynamoDB (LocalStack)
+        |
+        | 4. Metadata stored & queried
+        ▼
+FastAPI APIs
+
+🛠 Tech Stack
+Layer	Technology
+Language	Python 3.11
+API Framework	FastAPI
+Cloud Storage	Amazon S3 (via LocalStack)
+Database	Amazon DynamoDB
+Infrastructure	Docker + LocalStack
+Testing	Pytest + Moto
+⚙️ Setup Instructions
+1️⃣ Install Requirements
+
+Make sure you have:
+
+Docker
+
+Docker Compose
 
 Python 3.11+
 
-2. Start Local Infrastructure
-Run the following command to start S3 and DynamoDB locally via LocalStack:
-
-Bash
-
+2️⃣ Start AWS Services Locally
 docker-compose up -d
-3. Install Dependencies
-Bash
 
+
+This starts:
+
+S3
+
+DynamoDB
+
+3️⃣ Install Python Dependencies
 pip install -r requirements.txt
-4. Run the Application
-Bash
 
+4️⃣ Run the API
 uvicorn app.main:app --reload
-The API will be available at http://localhost:8000.
 
-🚀 API Documentation & Usage
-1. Upload Image (POST)
-Endpoint: /images/upload Generates a presigned URL and saves metadata to DynamoDB.
 
-Query Params: user_id, tags (optional), description (optional)
+API will run at:
 
-Bash
+http://127.0.0.1:8000
 
-curl.exe -X POST "http://localhost:8000/images/upload?user_id=meghana&tags=test,cloud"
-2. List Images (GET)
-Endpoint: /images Supports filtering by user_id, tag, and date range.
 
-Bash
+Swagger UI:
 
-# Filter by tag
-curl.exe -X GET "http://localhost:8000/images?tag=cloud"
-3. Download Image (GET)
-Endpoint: /images/{image_id}/download Returns a short-lived presigned URL for secure image viewing or downloading.
+http://127.0.0.1:8000/docs
 
-Bash
+📤 API Endpoints
+Upload Image
 
-curl.exe -X GET "http://localhost:8000/images/{id}/download"
-4. Delete Image (DELETE)
-Endpoint: /images/{image_id} Removes the image file from S3 and the metadata record from DynamoDB.
+POST /images/upload
 
-Bash
+Returns a presigned S3 upload URL and stores metadata.
 
-curl.exe -X DELETE "http://localhost:8000/images/{id}"
+Example:
+
+curl -X POST "http://localhost:8000/images/upload?user_id=meghana&tags=selfie&description=test"
+
+List Images
+
+GET /images
+
+Supports filters:
+
+user_id
+
+tag
+
+Example:
+
+curl "http://localhost:8000/images?user_id=meghana"
+
+Download Image
+
+GET /images/{image_id}/download
+
+Returns a secure temporary S3 URL.
+
+Delete Image
+
+DELETE /images/{image_id}
+
+Deletes both:
+
+S3 file
+
+DynamoDB metadata
+
 🧪 Testing
-The project includes unit and integration tests to ensure reliability.
 
-Unit Tests: Use moto to mock AWS services in-memory.
+This project includes fully isolated AWS-mocked tests using Moto.
 
-Integration Tests: Verify flows against the LocalStack environment.
-
-To run all tests:
-
-Bash
+Run:
 
 pytest
+
+
+It validates:
+
+Presigned URL generation
+
+DynamoDB storage
+
+Image listing
+
 📂 Project Structure
-Plaintext
-
-cloud-image-service/
+cloud_image_service/
 ├── app/
-│   ├── main.py          # FastAPI application & Business Logic
+│   ├── main.py
 │   ├── __init__.py
-│   └── tests/           # Unit and Integration tests
-│       ├── test_list.py
-│       └── test_upload.py
-├── docker-compose.yml   # LocalStack configuration
-├── requirements.txt     # Python dependencies
-└── README.md            # Documentation
-📞 Contact
-For queries regarding this submission, please contact:
+│   └── tests/
+│       ├── test_upload.py
+│       └── test_list.py
+├── docker-compose.yml
+├── requirements.txt
+└── README.md
 
-Developer: Meghanashetty7227@gmail.com
+👩‍💻 Author
 
-Submission To: Shricharan (shricharan@unloadin.com)
+Meghana Shetty
+📧 meghanashetty7227@gmail.com
